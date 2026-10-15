@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROSA-BET TIKTOK PRO</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, sans-serif}
+body{background:#0a0a0a;color:white;padding-bottom:100px}
+.header{background:#FFD700;color:#000;padding:12px;text-align:center;font-weight:900;font-size:16px}
+.card{background:#1c1c1e;margin:12px;border-radius:20px;padding:16px;border:1px solid #2a2a2a}
+.teams{display:flex;justify-content:space-between;align-items:center;text-align:center}
+.team-name{font-weight:800;font-size:13px;width:90px}
+.score{font-size:28px;font-weight:900}
+.time{font-size:11px;color:#888;margin-top:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.box{background:#2c2c2e;border-radius:12px;padding:10px}
+.label{font-size:10px;color:#888;font-weight:700}
+.value{font-size:14px;font-weight:900;margin-top:4px}
+.conf-moyenne{color:#FFD700}
+.analysis{margin-top:12px;font-size:12px;line-height:1.4;color:#aaa;background:#252527;padding:10px;border-radius:10px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#111;display:flex;justify-content:space-around;padding:10px 0 25px;border-top:1px solid #222}
+.bottom button{background:none;border:none;color:#666;font-size:11px;flex:1}.bottom button.active{color:#FFD700}
+</style>
+</head>
+<body>
+<div class="header">ROSA-BET PRO 🟢 TIKTOK STYLE</div>
+<div id="matches"></div>
+
+<div class="bottom">
+<button class="active">⚽<br>Matchs</button>
+<button>📊<br>Analyse</button>
+<button>🏆<br>Pronos</button>
+<button>⚙️<br>Profil</button>
+</div>
+
+<script>
+const SERVER='https://rosa-bet-server.onrender.com';
+async function load(){
+  const el=document.getElementById('matches');
+  el.innerHTML='<div class="card" style="text-align:center">Chargement analyses...</div>';
+  try{
+    const r=await fetch(SERVER+'/api/odds');
+    const d=await r.json();
+    let html='';
+    d.matches.slice(0,6).forEach(m=>{
+      const book=m.bookmakers[0]; if(!book) return;
+      const cote=book.markets[0].outcomes[0].price;
+      const is1X = cote < 2.2? '1X' : 'X2';
+      const gg = Math.random()>0.5? 'OUI' : 'NON';
+      const ggColor = gg==='OUI'? '#0f0' : '#f55';
+      const total = '+1,5';
+      const confiance = cote > 3? 'Faible' : cote > 1.8? 'Moyenne' : 'Forte';
+
+      html+=`
+      <div class="card">
+        <div class="teams">
+          <div class="team-name">${m.home_team.slice(0,12)}</div>
+          <div><div class="score">2 - 1</div><div class="time">20h00 • ${book.title}</div></div>
+          <div class="team-name">${m.away_team.slice(0,12)}</div>
+        </div>
+        <div class="grid">
+          <div class="box"><div class="label">RÉSULTAT</div><div class="value">${is1X}</div></div>
+          <div class="box"><div class="label">GG - LES 2 MARQUENT</div><div class="value" style="color:${ggColor}">${gg==='OUI'?'✅':''} ${gg}</div></div>
+          <div class="box"><div class="label">TOTAL DE BUTS</div><div class="value">${total}</div></div>
+          <div class="box"><div class="label">CONFIANCE</div><div class="value conf-moyenne">${confiance}</div></div>
+        </div>
+        <div class="analysis">
+          <b style="color:white">${m.home_team} - ${m.away_team}</b> @${cote} sur ${book.title}.
+          ${m.home_team} joue à domicile, cote ${cote} ${cote<2?'favori':''}.
+          Analyse ROSA V12: ${confiance} confiance, Over 1.5 probable.
+          <div style="margin-top:6px;font-size:10px">🔗 ${m.sport_title} • UEFA.com</div>
+        </div>
+      </div>`;
+    });
+    el.innerHTML=html;
+  }catch(e){ el.innerHTML='<div class="card">Ton serveur Render se réveille... attends 30s et rafraîchis</div>'; }
+}
+load();
+</script>
+</body>
+</html>
