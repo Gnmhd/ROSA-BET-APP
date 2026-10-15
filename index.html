@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROSA-BET PRO</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#0a0a0a;color:white;padding-bottom:110px}
+.header{background:#FFD700;color:#000;padding:15px;text-align:center;font-weight:900;font-size:20px;position:sticky;top:0}
+.card{background:#161616;margin:12px;border-radius:16px;padding:14px;border:1px solid #222}
+.match{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #222}
+.team{font-weight:700}
+.league{font-size:11px;color:#888}
+.odd{background:#FFD700;color:#000;padding:7px 12px;border-radius:20px;font-weight:900}
+.btn-analyse{width:100%;background:#FFD700;color:#000;border:none;padding:14px;border-radius:12px;font-weight:900;margin-top:12px}
+.tab{display:none}.tab.active{display:block}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#111;display:flex;justify-content:space-around;padding:12px 0 28px;border-top:1px solid #222}
+.bottom button{background:none;border:none;color:#666;font-size:11px;flex:1}
+.bottom button.active{color:#FFD700}
+.analyse-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.analyse-box{background:#222;border-radius:12px;padding:12px;text-align:center}
+.analyse-box b{color:#FFD700;display:block}
+</style>
+</head>
+<body>
+<div class="header">ROSA-BET PRO 🔥 LIVE ODDS</div>
+
+<div id="tab-matchs" class="tab active">
+<div class="card">
+<div style="display:flex;justify-content:space-between"><b style="color:#FFD700">COTES RÉELLES LIVE</b><span id="liveCount" style="color:#0f0;font-size:12px">● connexion...</span></div>
+<div id="matches" style="margin-top:10px">Connexion aux bookmakers...</div>
+<button class="btn-analyse" onclick="showTab('analyse')">🔍 ANALYSE V12</button>
+</div>
+</div>
+
+<div id="tab-analyse" class="tab"><div class="card"><b style="color:#FFD700">📊 ANALYSE V12</b><div id="selectedMatch" style="margin:10px 0;color:#888">Sélectionne un match</div><div class="analyse-grid"><div class="analyse-box"><b id="p1">-</b><span id="c1">-</span></div><div class="analyse-box"><b id="p2">-</b><span id="c2">-</span></div><div class="analyse-box"><b id="p3">-</b><span id="c3">-</span></div><div class="analyse-box"><b id="p4">-</b><span id="c4">-</span></div></div></div></div>
+<div id="tab-pronos" class="tab"><div class="card"><b style="color:#FFD700">🏆 MES PRONOS</b><div id="myPronos" style="margin-top:10px;color:#888">Aucun encore</div></div></div>
+<div id="tab-profil" class="tab"><div class="card"><b style="color:#FFD700">⚙️ PROFIL</b><p style="margin-top:10px">Clé activée ✅<br><small id="quota" style="color:#666"></small></p><button class="btn-analyse" onclick="loadMatches()">🔄 Actualiser</button></div></div>
+
+<div class="bottom">
+<button id="btn-matchs" class="active" onclick="showTab('matchs')">⚽<br>Matchs</button>
+<button id="btn-analyse" onclick="showTab('analyse')">📊<br>Analyse</button>
+<button id="btn-pronos" onclick="showTab('pronos')">🏆<br>Pronos</button>
+<button id="btn-profil" onclick="showTab('profil')">⚙️<br>Profil</button>
+</div>
+
+<script>
+const API_KEY = 'e97621933ad3499e9895ce39bfb659be';
+let currentMatch=null;
+function showTab(n){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.bottom button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+n).classList.add('active');document.getElementById('btn-'+n).classList.add('active');}
+
+async function loadMatches(){
+  const el=document.getElementById('matches');
+  el.innerHTML='Chargement...';
+  try{
+    const leagues=['soccer_epl','soccer_spain_la_liga','soccer_france_ligue_one'];
+    let html=''; let count=0;
+    for(let lg of leagues){
+      const target=`https://api.the-odds-api.com/v4/sports/${lg}/odds/?regions=eu&markets=h2h&oddsFormat=decimal&apiKey=${API_KEY}`;
+      const proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(target);
+      const r=await fetch(proxy);
+      if(!r.ok) continue;
+      const data=await r.json();
+      if(!data.length) continue;
+      data.slice(0,3).forEach(m=>{
+        const book=m.bookmakers[0]; if(!book) return;
+        const price=book.markets[0].outcomes[0].price;
+        html+=`<div class="match" onclick="selectMatch('${m.home_team}','${m.away_team}','${price}','${book.title}')"><div><div class="league">${
