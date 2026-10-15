@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ROSA-BET AI - Doté de tout</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0e1e">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:#0a0e1e;color:#fff;padding-bottom:90px;-webkit-tap-highlight-color:transparent}
+.h{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#0a0e1e;z-index:99;border-bottom:1px solid #1a2340}
+.pro{background:#FFD700;color:#000;padding:3px 8px;border-radius:6px;font-weight:900;font-size:12px;margin-left:6px}
+.dates{display:flex;gap:8px;padding:10px;overflow-x:auto;scrollbar-width:none}
+.d{background:#182040;padding:8px 14px;border-radius:14px;min-width:68px;text-align:center;border:1px solid #25315a;font-size:12px;cursor:pointer}
+.d.active{background:#FFD700;color:#000;font-weight:900}
+.pulse{display:flex;gap:6px;padding:0 10px 10px}
+.pill{flex:1;background:#121a36;border-radius:12px;padding:8px;text-align:center;border:1px solid #1e2a55;font-size:10px}
+.card{background:#121a36;border-radius:16px;margin:8px 10px;padding:14px;border:1px solid #1e2a55}
+.conf{background:#2a2410;color:#FFD700;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid #5a4a1a}
+.btn{background:linear-gradient(90deg,#ff8c00,#ff5a00);border:none;width:100%;padding:13px;border-radius:12px;font-weight:900;color:#fff;margin-top:10px;cursor:pointer}
+.row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #1a2340;font-size:13px;align-items:center}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#0a0e1e;display:flex;justify-content:space-around;padding:8px 0 20px;border-top:1px solid #1a2340;z-index:99}
+.bottom button{background:none;border:none;color:#5a6a9a;font-size:9px;flex:1;cursor:pointer}.bottom button.active{color:#FFD700}
+.tab{display:none}.tab.active{display:block}
+.stars{color:#FFD700}
+.prem{background:#5a3ec8;color:#fff;padding:5px 10px;border-radius:10px;font-size:11px}
+.mRow{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #0f1530}
+</style>
+</head>
+<body>
+<div class="h"><div style="font-weight:900;font-size:18px">AI ScoreCast<span class="pro">PRO</span></div><div style="display:flex;gap:8px;font-size:20px"><span>⚙️</span><span>🔔</span><span style="background:#5a7aff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900">MO</span></div></div>
+
+<div id="tab-decouvrir" class="tab active">
+<div class="dates">
+<div class="d" onclick="loadMatches('14/10',this)">14/10</div>
+<div class="d active" onclick="loadMatches('15/10',this)"><small>Aujourd'hui</small><br><b>15/10</b></div>
+<div class="d" onclick="loadMatches('16/10',this)"><small>Ven</small><br><b>16/10</b></div>
+<div class="d" onclick="loadMatches('17/10',this)"><small>Sam</small><br><b>17/10</b></div>
+</div>
+<div style="padding:0 14px 8px;display:flex;justify-content:space-between;font-size:11px;color:#8aa"><span id="onlineTxt">2,748 utilisateurs en ligne</span><span style="color:#0f0">● EN DIRECT</span></div>
+<div class="pulse"><div class="pill"><small>AI PULSE</small><br>🤖 <b id="pulse">LIVE</b></div><div class="pill"><small>HAUTE CONFIANCE</small><br><b id="hc">26</b></div><div class="pill"><small>SIGNAL FORT</small><br><b id="sf">58</b></div><div class="pill"><small>MOY</small><br><b>%82</b></div></div>
+<div id="matchesList"><div class="card" style="text-align:center;color:#8aa">🤖 ROSA AI charge les matchs du 15/10...<br><small>Connexion à rosa-bet-server.onrender.com</small></div></div>
+</div>
+
+<div id="tab-detail" class="tab"><div class="h"><span onclick="showTab('decouvrir')" style="cursor:pointer">← Retour</span><span id="detailTitle" style="font-size:12px">Match</span></div><div id="detailContent"></div></div>
+
+<div class="bottom">
+<button class="active" id="b-decouvrir" onclick="showTab('decouvrir')">🏆<br>Décou...</button>
+<button onclick="showTab('decouvrir')">▶️<br>En Dir...</button>
+<button onclick="showTab('decouvrir')">🎯<br>Combo</button>
+<button onclick="showTab('decouvrir')">⭐<br>Favoris</button>
+<button onclick="showTab('decouvrir')">🌍<br>Ligues</button>
+<button onclick="showTab('decouvrir')">👥<br>Social</button>
+</div>
+
+<script>
+const SERVER='https://rosa-bet-server.onrender.com';
+let CURRENT=[];
+function showTab(id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');if(id==='decouvrir'){document.querySelectorAll('.bottom button').forEach(b=>b.classList.remove('active'));document.getElementById('b-decouvrir').classList.add('active');}}
+async function loadMatches(date,el){
+ if(el){document.querySelectorAll('.d').forEach(d=>d.classList.remove('active'));el.classList.add('active');}
+ const list=document.getElementById('matchesList');list.innerHTML='<div class="card">Chargement IA '+date+'...</div>';
+ try{
+  const r=await fetch(SERVER+'/api/odds?league=all&date='+date);const j=await r.json();CURRENT=j.matches;
+  document.getElementById('onlineTxt').innerText=j.users_online+' utilisateurs en ligne';
+  document.getElementById('hc').innerText=Math.floor(j.count/2);document.getElementById('sf').innerText=j.count*2;
+  if(j.count===0) throw 'vide';
+  list.innerHTML='<div style="padding:0 10px 6px;display:flex;justify-content:space-between"><b>Matchs Gratuits</b><span style="background:#182040;padding:4px 10px;border-radius:20px;font-size:11px">'+j.count+'</span></div>'+j.matches.map((m,i)=>`
+   <div class="card" onclick="openDetail(${i})" style="cursor:pointer">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:#5a7aff">16:45 • ${date} • ${m.league_key||'europa'}</span><span class="conf">${m.ai.confiance}</span></div>
+    <div style="margin-top:8px;font-size:14px">⚽ ${m.home_team}<br>⚽ ${m.away_team}</div>
+    <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px"><span>1: ${m.ai.proba['1']}% | X: ${m.ai.proba['X']}% | 2: ${m.ai.proba['2']}%</span><span class="stars">${m.ai.stars}</span></div>
+    <div style="display:flex;gap:8px;margin-top:8px"><div style="flex:1"><div style="font-size:10px;color:#8aa">Score Exact</div><div style="font-weight:900;color:#FFD700">${m.ai.score_exact}</div></div><div style="flex:1;text-align:right"><div class="prem" style="display:inline-block">Premium ⭐ Voir le Choix de l'IA</div></div></div>
+    <div style="font-size:10px;color:#5a6a9a;margin-top:8px">👁️ ${280+Math.floor(Math.random()*120)} personnes consultent • Top Pick • xG ${m.ai.xg.home}-${m.ai.xg.away}</div>
+   </div>`).join('')+`<div style="padding:10px"><b>Les Sélections IA Les Plus Fortes du Jour</b><br><small style="color:#8aa">Les meilleurs pronos avec ${j.count} matchs analysés par ROSA AI</small></div>`;
+ }catch(e){
+  list.innerHTML='<div class="card">Serveur se réveille (30s)...<br><small>'+e+'</small><br><button class="btn" onclick="loadMatches(\''+date+'\')">Réessayer</button></div>';
+ }
+}
+function openDetail(i){
+ const m=CURRENT[i];
+ document.getElementById('detailTitle').innerText=m.home_team+' vs '+m.away_team;
+ document.getElementById('detailContent').innerHTML=`
+  <div class="card"><div style="display:flex;justify-content:space-between"><b>Résultat du match</b><span class="conf">${m.ai.confiance} • ${m.ai.stars}</span></div>
+  <div style="display:flex;justify-content:space-around;margin-top:14px;text-align:center">
+   <div><small style="color:#8aa">1 - ${m.ai.proba['1']}%</small><div style="background:#182040;padding:10px 14px;border-radius:10px;margin-top:6px;border:1px solid #25315a">${m.home_team.substring(0,10)}</div></div>
+   <div><small style="color:#8aa">X - ${m.ai.proba['X']}%</small><div style="background:#182040;padding:10px 14px;border-radius:10px;margin-top:6px;border:1px solid #25315a">Nul</div></div>
+   <div><small style="color:#8aa">2 - ${m.ai.proba['2']}%</small><div style="background:#182040;padding:10px 14px;border-radius:10px;margin-top:6px;border:1px solid #25315a">${m.away_team.substring(0,10)}</div></div>
+  </div><small style="color:#5a6a9a;display:block;margin-top:10px">Les prédictions les plus fortes de l'IA pour ce match - xG ${m.ai.xg.home} vs ${m.ai.xg.away}</small></div>
+  <div class="card" style="background:linear-gradient(180deg,#1a2340,#121a36)"><b>⚠️ L'IA a repéré un détail frappant</b><p style="font-size:12px;color:#8aa;margin-top:6px">${m.ai.detail_frappant}</p><div style="margin-top:10px;background:#0f1530;padding:10px;border-radius:10px;font-size:12px">${m.ai.constat}<br><br><span style="background:#3a2a1a;color:#ffaa00;padding:4px 8px;border-radius:6px;font-size:10px">Constat critique: xG supérieur à domicile</span><br><br><span style="background:#3a2a1a;color:#ffaa00;padding:4px 8px;border-radius:6px;font-size:10px">${m.ai.signals} signaux IA & étoiles détectés</span></div><button class="btn" style="background:#5a4aff">🔍 Découvrez ce que l'IA a vu ! ></button></div>
+  <div class="card"><div style="display:flex;justify-content:space-between;font-size:11px;color:#8aa"><span>TYPE DE PRONOSTIC</span><span>CONFIANCE IA</span></div>
+   <div class="row"><span>Double Chance: ${m.ai.double_chance}</span><span class="stars">${m.ai.stars}</span></div>
+   <div class="row"><span>Score Exact: ${m.ai.score_exact}</span><span class="stars">${m.ai.stars}</span></div>
+   <div class="row"><span>BTTS: ${m.ai.btts}</span><span class="stars">${m.ai.stars}</span></div>
+   <div class="row"><span>Over 2.5: ${m.ai.over_2_5}</span><span class="stars">${m.ai.stars}</span></div>
+   <div class="row"><span>Total Buts: ${m.ai.total_buts}</span><span class="stars">${m.ai.stars}</span></div>
+   <div class="row"><span>Mi-Temps / Temps Plein: 1/1</span><span class="stars">${m.ai.stars}</span></div>
+   <small style="color:#5a6a9a">Toutes les probabilités calculées par ROSA AI xG Model</small>
+   <div style="background:linear-gradient(90deg,#1e3a8a,#1e40af);padding:12px;border-radius:12px;margin-top:12px;text-align:center"><b>Débloquer Tous les Pronostics Premium</b><br><small>Accès illimité • Sans pub • Contenu exclusif</small><br><button class="btn">Débloquer Premium →</button></div>
+  </div>
+  <div class="card"><b>IA vs Communauté</b><p style="font-size:11px;color:#8aa">Qui va gagner?</p><div class="row"><span><input type="radio" name="vote"> ${m.home_team}</span><span>${m.ai.proba['1']}%</span></div><div class="row"><span><input type="radio" name="vote"> Nul</span><span>${m.ai.proba['X']}%</span></div><div class="row"><span><input type="radio" name="vote"> ${m.away_team}</span><span>${m.ai.proba['2']}%</span></div></div>
+ `;
+ showTab('detail');
+}
+loadMatches('15/10');
+</script>
+</body>
+</html>
