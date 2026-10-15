@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROSA-BET - App</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFD700">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#0a0a0a;color:#fff;padding-bottom:80px}
+.header{background:linear-gradient(135deg,#000,#1a1a00);padding:20px;text-align:center;border-bottom:2px solid #FFD700}
+.header h1{color:#FFD700;font-size:28px;letter-spacing:2px}
+.card{background:#151515;margin:15px;border-radius:15px;padding:15px;border:1px solid #222}
+.card-title{color:#FFD700;font-weight:bold;margin-bottom:10px;display:flex;justify-content:space-between}
+.match{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #222}
+.odds{background:#FFD700;color:#000;padding:4px 10px;border-radius:20px;font-weight:bold;font-size:13px}
+.btn{background:linear-gradient(135deg,#FFD700,#ffb700);color:#000;border:none;padding:14px;width:100%;border-radius:12px;font-weight:bold;font-size:15px;margin-top:10px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#111;display:flex;justify-content:space-around;padding:12px 0;border-top:1px solid #333}
+.nav-item{color:#666;text-align:center;font-size:11px}
+.nav-item.active{color:#FFD700}
+.tag{font-size:10px;background:#222;padding:3px 7px;border-radius:10px;color:#FFD700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.stat{background:#1e1e1e;padding:12px;border-radius:10px;text-align:center}
+.stat b{color:#FFD700;font-size:18px;display:block}
+</style>
+</head>
+<body>
+<div class="header"><h1>ROSA-BET</h1><p>Analyse Temps Réel</p></div>
+<div class="card">
+<div class="card-title">📅 MATCHS DU JOUR <span class="tag">LIVE</span></div>
+<div id="matches">
+<div class="match"><span>Dortmund vs Bayern</span><span class="odds">@2.10</span></div>
+<div class="match"><span>Barça vs Real</span><span class="odds">@1.95</span></div>
+<div class="match"><span>PSG vs Marseille</span><span class="odds">@1.75</span></div>
+</div>
+<button class="btn" onclick="alert('ROSA-BET V12: Over 2.5, Over 9.5 Corners, GG, 2-1')">🔍 ANALYSE ROSA-BET</button>
+</div>
+<div class="card"><div class="card-title">📊 ANALYSE V12</div>
+<div class="grid"><div class="stat"><b>Over 2.5</b>But</div><div class="stat"><b>Over 9.5</b>Corner</div><div class="stat"><b>GG OUI</b>Marquent</div><div class="stat"><b>2-1</b>Score</div></div>
+</div>
+<div class="nav"><div class="nav-item active">⚽<br>Matchs</div><div class="nav-item">📊<br>Analyse</div><div class="nav-item">🏆<br>Pronos</div><div class="nav-item">⚙️<br>Profil</div></div>
+</body>
+</html>
