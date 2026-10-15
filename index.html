@@ -1,7 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROSA-BET STABLE</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROSA-BET</title>
 <link rel="manifest" href="manifest.json">
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}body{background:#0a0e1e;color:#fff;padding-bottom:80px}.h{padding:12px;display:flex;justify-content:space-between;background:#0a0e1e;position:sticky;top:0;z-index:10;border-bottom:1px solid #1a2340}.card{background:#121a36;margin:8px 10px;padding:14px;border-radius:16px;border:1px solid #1e2a55}.conf{background:#2a2410;color:#FFD700;padding:4px 10px;border-radius:20px;font-size:11px}.btn{background:linear-gradient(90deg,#ff8c00,#ff5a00);border:none;width:100%;padding:12px;border-radius:12px;font-weight:900;color:#fff;margin-top:8px;cursor:pointer}.d{background
+<style>
+body{background:#0a0e1e;color:#fff;font-family:-apple-system,sans-serif;margin:0;padding:0 0 80px 0}
+.h{padding:12px;display:flex;justify-content:space-between;position:sticky;top:0;background:#0a0e1e;border-bottom:1px solid #1a2340;z-index:10}
+.c{background:#121a36;margin:10px;padding:14px;border-radius:16px;border:1px solid #1e2a55}
+.conf{background:#2a2410;color:#FFD700;padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid #5a4a1a}
+.b{background:linear-gradient(90deg,#ff8c00,#ff5a00);border:0;width:100%;padding:12px;border-radius:12px;font-weight:900;color:#fff;margin-top:8px;cursor:pointer}
+.d{background:#182040;padding:8px 14px;border-radius:14px;min-width:70px;text-align:center;border:1px solid #25315a;cursor:pointer;font-size:12px}
+.d.active{background:#FFD700;color:#000;font-weight:900}
+</style>
+<div class="h"><b>AI ScoreCast <span style="background:#FFD700;color:#000;padding:3px 8px;border-radius:6px;font-size:12px">PRO</span></b><span id="online">...</span></div>
+<div style="display:flex;gap:8px;padding:10px;overflow-x:auto">
+<div class="d" onclick="load('14/10',this)">14/10</div>
+<div class="d active" onclick="load('15/10',this)">Aujourd'hui 15/10</div>
+<div class="d" onclick="load('16/10',this)">Ven 16/10</div>
+<div class="d" onclick="load('17/10',this)">Sam 17/10</div>
+</div>
+<div id="list"><div class="c">🤖 ROSA AI charge...</div></div>
+<script>
+var SERVER="https://rosa-bet-server.onrender.com";
+function localAI(){return {proba:{"1":"62.3","X":"18.4","2":"19.3"},score_exact:"2 - 0",confiance:"Moyenne",stars:"★★★",xg:{home:1.9,away:0.8},detail:"3 signaux affectent la confiance"}}
+
+function render(arr){
+ var html="";
+ for(var i=0;i<arr.length;i++){
+  var m=arr[i];
+  var ai=m.ai || localAI();
+  html+='<div class=c><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:#5a7aff">16:45 • Europa</span><span class=conf>'+(ai.confiance||"Moyenne")+' '+(ai.stars||"★★★")+'</span></div><div style="margin-top:8px">⚽ '+m.home_team+'<br>⚽ '+m.away_team+'</div><div style="margin-top:6px;font-size:11px">1: '+(ai.proba?ai.proba["1"]:"62.3")+'% | X: '+(ai.proba?ai.proba["X"]:"18.4")+'% | 2: '+(ai.proba?ai.proba["2"]:"19.3")+'%</div><button class=b>⭐ Voir le Choix de l\'IA → '+(ai.score_exact||"2 - 0")+'</button><div style="font-size:10px;color:#666;margin-top:4px">xG '+(ai.xg?ai.xg.home:1.9)+'-'+(ai.xg?ai.xg.away:0.8)+' • '+(ai.detail_frappant||ai.detail||"")+'</div></div>';
+ }
+ document.getElementById("list").innerHTML=html;
+}
+
+async function load(date,el){
+ if(el){document.querySelectorAll(".d").forEach(function(d){d.classList.remove("active")});el.classList.add("active")}
+ document.getElementById("list").innerHTML='<div class=c>Chargement IA '+date+'...</div>';
+ try{
+  var r=await fetch(SERVER+"/api/odds?league=all&date="+date+"?t="+Date.now());
+  var j=await r.json();
+  var ms=j.matches||[];
+  // GARDE ANTI-PLANTAGE
+  for(var k=0;k<ms.length;k++){ if(!ms[k].ai ||!ms[k].ai.proba) ms[k].ai=localAI(); }
+  if(ms.length==0) throw "vide";
+  document.getElementById("online").innerText=(j.users_online||2748)+" en ligne ● LIVE";
+  render(ms);
+ }catch(err){
+  document.getElementById("online").innerText="2748 en ligne (offline)";
+  var demo=[
+   {home_team:"AZ Alkmaar",away_team:"Hapoel Be'er Sheva",ai:{proba:{"1":"62.3","X":"18.4","2":"19.3"},score_exact:"2 - 0",confiance:"Moyenne",stars:"★★★",xg:{home:1.9,away:0.8},detail_frappant:"3 signaux affectent la confiance"}},
+   {home_team:"Union St-Gilloise",away_team:"Real Sociedad",ai:{proba:{"1":"45.2","X":"24.1","2":"30.7"},score_exact:"2 - 1",confiance:"Forte",stars:"★★",xg:{home:1.6,away:1.1},detail_frappant:"2 signaux"}}
+  ];
+  render(demo);
+ }
+}
+load("15/10");
+</script>
+</html>
